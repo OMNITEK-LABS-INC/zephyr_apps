@@ -1,0 +1,24 @@
+#
+# Copyright 2023 NXP
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+identifier: ionode_a2@B/mimxrt1176/cm4
+name: AMMORTAL IONODE-A2 CM4
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+ram: 128
+flash: 128
+supported:
+  - dac
+  - dma
+  - flash
+  - gpio
+  - i2c
+  - pwm
+  - spi
+vendor: nxp

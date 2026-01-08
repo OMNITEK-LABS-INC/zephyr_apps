@@ -1,0 +1,64 @@
+Issue noticed when programming mcuboot on ionode using jlink debugger:
+
+When programming zephyr bootloader(mcuboot) the ionode will not boot until reading the flash chip using NXP-MCUBootUtility?  After that the board seems to boot as expected, even after power cycles.
+
+<repro method>
+power on board
+west flash (bootloader and app)
+reset board
+* board will not boot
+connect USB cable to OTG_1 and start NXP-MCUBootUtility
+(may need to reset board for USB IDs to be seen)
+NXP-MCUBootUtility: set correct Flash type (Windbond_QuadSPI_W25QxxxIV)
+NXP-MCUBootUtility: connect to ROM
+NXP-MCUBootUtility: Boot Device Memory, Range Read addr 0x400 len 0x200
+*** if you see valid data (not all 0xff) then QE bit is set; otherwise disconnect and retry (usually takes 2 attempts to see valid data)
+NXP-MCUBootUtility: disconnect/reset
+* board will now boot
+
+
+NXP-MCUBootUtility for RT processors
+https://github.com/JayHeng/NXP-MCUBootUtility
+git clone https://github.com/JayHeng/NXP-MCUBootUtility.git
+* run \NXP-MCUBootUtility\binNXP-MCUBootUtility.exe
+connect USB to ionode ROM bootloader serial port OTG_1
+
+
+An app note talks about something similar for rt1176 revB parts:
+https://forum.segger.com/thread/9456-solved-imxrt1170-rev-b-support/
+* something about writing an ID (0x5aa60ff0) into ITCM memory at addr 0xfffc (this does not make sense???)
+https://github.com/JayHeng/RT-UFL/blob/master/README-en.md
+https://community.nxp.com/t5/i-MX-RT-Knowledge-Base/RT600-MCUXpresso-JLINK-debug-QSPI-flash/ta-p/1345484
+*** The RT Universal Flashloader (RT-UFL) seems to be an extension of the jlink flashloader that will properly set the QE bit.
+https://community.nxp.com/t5/i-MX-Processors/qspi-issue/m-p/1690805
+
+
+>>> I think the problem is actually the QSPI QE bit being cleared after jlink programs the mcuboot image
+>>> jlink programming the app image does not seem to cause this issue
+
+* after building both images with --sysbuild you can flash each image separately by using the --build-dir parameter
+west flash --runner jlink --build-dir .\build\mcuboot\
+west flash --runner jlink --build-dir .\build\ionode-test\
+
+
+<workaround>
+1) build bootloader and app image
+west build -p always -b ionode_a2/mimxrt1176/cm7 --sysbuild -- -DBOARD_ROOT="C:\Omnitek_Dev\zephyr_apps"
+
+2) program bootloader image
+west flash --runner jlink --build-dir .\build\mcuboot\
+
+3) use MCUBootUtility to make sure ROM bootloader can read QSPI flash (QE bit is set)
+
+4) program app image
+west flash --runner jlink --build-dir .\build\ionode-test\
+
+* board should boot mcuboot and run app
+
+5) for app changes build/flash without --sysbuild OR build with --sysbuild and only program app image
+west build -p always -b ionode_a2/mimxrt1176/cm7 -- -DBOARD_ROOT="C:\Omnitek_Dev\zephyr_apps"
+west flash --runner jlink
+OR
+west build -p always -b ionode_a2/mimxrt1176/cm7 --sysbuild -- -DBOARD_ROOT="C:\Omnitek_Dev\zephyr_apps"
+west flash --runner jlink --build-dir .\build\ionode-test\
+

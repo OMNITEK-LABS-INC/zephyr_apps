@@ -1,0 +1,11 @@
+board:
+  name: ionode_a2
+  full_name: IONODE-A2
+  vendor: ammortal
+  socs:
+    - name: mimxrt1176
+  revision:
+    format: "letter"
+    default: "A"
+    revisions:
+      - name: "A"

@@ -1,0 +1,5 @@
+# Copyright (c) 2020, NXP
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_ROLLWINDER_RT1024
+	select SOC_PART_NUMBER_MIMXRT1024DAG5A

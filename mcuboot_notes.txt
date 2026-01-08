@@ -1,0 +1,119 @@
+Zephyr MCUBoot Notes
+
+Adding bootloader
+https://docs.zephyrproject.org/latest/services/device_mgmt/dfu.html
+https://docs.mcuboot.com/readme-zephyr.html
+
+!!! .dts file must have flash partitions defined
+boot_partition
+slot0_partition
+slot1_partition
+
+*** zephyr repo already contains the mcuboot repo
+build machine setup
+> cd C:\zephyr_dev\workspace\bootloader\mcuboot\
+> pip3 install --user -r scripts/requirements.txt
+
+create signing key for images
+https://docs.mcuboot.com/imgtool.html
+$ cd C:\zephyr_dev\workspace\bootloader\mcuboot
+$ python ./scripts/imgtool.py keygen -k omnitek-ec-p256.pem -t ecdsa-p256
+
+building mcuboot
+* CONFIG_BOOT_SIGNATURE_KEY_FILE set to keypair file
+* CONFIG_BOOT_SIGNATURE_TYPE_... set to keypair file type
+??? I added the following to prj.conf in boot/zephyr but their should be a better way
+"""
+CONFIG_BOOT_SIGNATURE_TYPE_ECDSA_P256=y
+CONFIG_BOOT_SIGNATURE_KEY_FILE="omnitek-ec-p256.pem"
+"""
+* open terminal
+* activate virtual env and set ZEPHYR_BASE
+(.venv)> cd C:\zephyr_dev\workspace\bootloader\mcuboot\boot\zephyr
+(.venv)> west build -b mimxrt1024_evk
+(.venv)> west flash --runner jlink
+*** binaries are located in build/zephyr/zephyr.bin
+*** the public key (for applications) is saved in build/zephyr/autogen-pubkey.c
+
+building application
+*** using example app samples/zephyrs/hello-world for test
+* edit prj.conf file
+"""
+CONFIG_BOOTLOADER_MCUBOOT=y
+CONFIG_MCUBOOT_SIGNATURE_KEY_FILE="bootloader/mcuboot/omnitek-ec-p256.pem"
+"""
+(.venv)> west build -b mimxrt1024_evk
+*** this generates an app signed by the public key
+??? may need to be programmed at the correct flash partition offset
+(.venv)> west flash --runner jlink
+
+"""
+*** Booting MCUboot v2.2.0-192-g96576b341ee1 ***
+*** Using Zephyr OS build v4.3.0-rc2-62-g8619248629b6 ***
+I: Starting bootloader
+I: Image index: 0, Swap type: none
+I: Image index: 0, Swap type: none
+I: Primary image: magic=unset, swap_type=0x1, copy_done=0x3, image_ok=0x3
+I: Secondary image: magic=unset, swap_type=0x1, copy_done=0x3, image_ok=0x3
+I: Boot source: none
+I: Image index: 0, Swap type: none
+I: Image index: 0, Swap type: none
+I: Image index: 0, Swap type: none
+I: Image index: 0, Swap type: none
+I: Bootloader chainload address offset: 0x20000
+I: Image version: v0.0.0
+I: Jumping to the first image slot
+*** Booting Zephyr OS build v4.3.0-rc2-62-g8619248629b6 ***
+Hello World from Zephyr on mimxrt1024_evk!
+"""
+
+<when app programmed with wrong .pem file>
+"""
+*** Booting MCUboot v2.2.0-192-g96576b341ee1 ***
+*** Using Zephyr OS build v4.3.0-rc2-62-g8619248629b6 ***
+I: Starting bootloader
+I: Image index: 0, Swap type: none
+I: Image index: 0, Swap type: none
+I: Primary image: magic=unset, swap_type=0x1, copy_done=0x3, image_ok=0x3
+I: Secondary image: magic=unset, swap_type=0x1, copy_done=0x3, image_ok=0x3
+I: Boot source: none
+I: Image index: 0, Swap type: none
+I: Image index: 0, Swap type: none
+I: Image index: 0, Swap type: none
+I: Image index: 0, Swap type: none
+E: Image in the primary slot is not valid!
+E: Unable to find bootable image
+"""
+
+...
+
+BETTER WAY to build both bootloader and app using sysbuild
+https://docs.zephyrproject.org/latest/samples/sysbuild/with_mcuboot/README.html#with_mcuboot
+* sysbuild.conf
+"""
+# Enable the bootloader when building with sysbuild.
+SB_CONFIG_BOOTLOADER_MCUBOOT=y
+"""
+* create a sysbuild/mcuboot.conf file in the application for key file reference
+"""
+CONFIG_BOOT_SIGNATURE_TYPE_ECDSA_P256=y
+CONFIG_BOOT_SIGNATURE_KEY_FILE="omnitek-ec-p256.pem"
+
+##CONFIG_MCUBOOT_SERIAL=y
+##CONFIG_MCUBOOT_DOWNGRADE_PREVENTION=y
+##CONFIG_MCUBOOT_VALIDATE_PRIMARY_SLOT=y
+"""
+(.venv)> west build -b mimxrt1024_evk --sysbuild
+(.venv)> west flash --runner jlink
+
+
+TODO: Need to move key file (.pem) to a secure location outside of source code repos
+
+...
+
+? How to test DFU with bootloader
+
+
+
+
+

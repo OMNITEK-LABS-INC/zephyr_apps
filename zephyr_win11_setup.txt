@@ -1,0 +1,104 @@
+Zephyr Win11 Setup Notes
+https://docs.zephyrproject.org/latest/develop/getting_started/index.html
+
+*** update windows
+- check/apply Win11 updates
+!!! assume jlink tools (JLink_Windows_x86_64) installed from Segger
+
+*** install tools
+- open terminal
+> winget install Kitware.CMake Ninja-build.Ninja oss-winget.gperf Python.Python.3.12 Git.Git oss-winget.dtc wget 7zip.7zip
+* may need to manually add 7z utility to PATH env var
+
+*** create zephyr project workspace and build virtual env
+!!! zephyr_dev should be kept out of git repo for app; no spaces in path
+> cd c:\zephyr_dev
+> mkdir workspace
+> python -m venv .\workspace\.venv
+* may need to run first "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser" to allow python operation
+* activate virtual env
+> .\workspace\.venv\Scripts\Activate.ps1
+! must be done each time starting zephyr build env
+
+*** install west tools
+(.venv)> pip install west
+*** get zephyr source 
+(.venv)> west init .\workspace\
+(.venv)> cd workspace
+(.venv)> west update
+*** export zephyr CMAKE package
+(.venv)> west zephyr-export
+*** install python deps
+(.venv)> west packages pip --install
+
+*** install zephyr SDK
+> cd zephyr
+(.venv)> west sdk install
+!!! look at the install -help details about how to only install required toolchains
+
+*** build blinky sample
+!!! start in zephyr dir
+(.venv)> west build -p always -b mimxrt1024_evk .\samples\basic\blinky\
+*** flash image
+(.venv)> west flash --runner jlink
+
+...
+
+Building freestanding apps with custom board files
+https://docs.zephyrproject.org/latest/develop/application/index.html#zephyr-workspace-app
+
+*** activate virtual env and set ZEPHYR_BASE env var
+> c:\zephyr_dev\workspace\.venv\Scripts\Activate.ps1
+***after entering venv, you should be able to run \zephyrproject\zephyr\zephyr-env.cmd to set ZEPHYR_BASE
+> c:\zephyr_dev\workspace\zephyr\zephyr-env.cmd
+or manually set ZEPHYR_BASE via cli
+> $Env:ZEPHYR_BASE = "C:\zephyr_dev\workspace\zephyr"
+or manually set ZEPHYR_BASE via GUI
+- manually add env var ZEPHYR_BASE (Settings, System, About, Advanced System Settings, Environment Vars, System Vars)
+(.venv) PS C:\zephyr_dev\blinky_test> echo $Env:ZEPHYR_BASE
+C:\zephyr_dev\workspace\zephyr
+"show all env vars" [System.Environment]::GetEnvironmentVariables()
+
+*** Create app dev workspace
+\zephyr_apps
+*** Create following dirs
+\zephyr_apps\app_name
+***Copy \zephyrproject\zephyr\samples\basic\blinky to \zephyr_apps\app_name as starting point
+\zephyr_apps\app_name\boards
+***add board overlay file for existing board or copy board files and rename for custom board
+\zephyr_apps\app_name\modules
+***for custom drivers
+
+*** Building freestanding app
+cd \zephyr_apps\app_name
+!!! assume virtual env activated and ZEPHYR_BASE set
+(.venv)> west build -p always -b mimxrt1024_evk
+***make sure jlink debugger connected to target and target has power
+(.venv)> west flash --runner jlink
+
+...
+
+Creating custom board dir
+https://docs.zephyrproject.org/latest/develop/application/index.html#custom-board-devicetree-and-soc-definitions
+follow operations under Custom Board, Devicetree and SOC Definitions
+
+*** remove any previous build dir before using new board
+(.venv)> west build -p always -b testdcp -- -DBOARD_ROOT="$(pwd)"
+
+!!! zephyr builds seems to be limited to 255 PATH lengths so you may have to move your zephyr_apps dir closer to C:\
+
+...
+* updating zephyr repo
+cd c:\zephyr_dev\workspace\zephyr
+git pull
+west update
+
+
+
+
+
+
+
+
+
+

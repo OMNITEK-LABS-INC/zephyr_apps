@@ -1,0 +1,6 @@
+board:
+  name: rollwinder_rt1024
+  full_name: Rollwinder RT1024 Motor Control Board
+  vendor: omnitek
+  socs:
+    - name: mimxrt1024

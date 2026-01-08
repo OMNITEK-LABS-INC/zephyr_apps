@@ -1,0 +1,59 @@
+cmake:
+  application:
+    configuration-dir: 'C:/zephyr_apps/ionode-test'
+    source-dir: 'C:/zephyr_apps/ionode-test'
+  board:
+    name: 'ionode_a2'
+    path:
+     - 'C:/zephyr_apps/boards/ammortal/ionode_a2'
+    qualifiers: 'mimxrt1176/cm7'
+    revision: 'A'
+  devicetree:
+    bindings-dirs:
+     - 'C:/zephyr_dev/workspace/zephyr/dts/bindings'
+    files:
+     - 'C:/zephyr_apps/boards/ammortal/ionode_a2/ionode_a2_mimxrt1176_cm7.dts'
+    include-dirs:
+     - 'C:/zephyr_dev/workspace/modules/hal/ambiq/dts'
+     - 'C:/zephyr_dev/workspace/modules/hal/atmel/include'
+     - 'C:/zephyr_dev/workspace/modules/hal/bouffalolab/include'
+     - 'C:/zephyr_dev/workspace/modules/hal/bouffalolab/include/zephyr'
+     - 'C:/zephyr_dev/workspace/modules/hal/gigadevice/include'
+     - 'C:/zephyr_dev/workspace/modules/hal/microchip/include'
+     - 'C:/zephyr_dev/workspace/modules/hal/microchip/dts'
+     - 'C:/zephyr_dev/workspace/modules/hal/nuvoton/dts'
+     - 'C:/zephyr_dev/workspace/modules/hal/nxp/dts'
+     - 'C:/zephyr_dev/workspace/modules/hal/stm32/dts'
+     - 'C:/zephyr_dev/workspace/modules/hal/ti/dts'
+     - 'C:/zephyr_apps/boards/ammortal/ionode_a2/dts'
+     - 'C:/zephyr_dev/workspace/zephyr/include'
+     - 'C:/zephyr_dev/workspace/zephyr/include/zephyr'
+     - 'C:/zephyr_dev/workspace/zephyr/dts/common'
+     - 'C:/zephyr_dev/workspace/zephyr/dts/vendor'
+     - 'C:/zephyr_dev/workspace/zephyr/dts/rx'
+     - 'C:/zephyr_dev/workspace/zephyr/dts/x86'
+     - 'C:/zephyr_dev/workspace/zephyr/dts/xtensa'
+     - 'C:/zephyr_dev/workspace/zephyr/dts/sparc'
+     - 'C:/zephyr_dev/workspace/zephyr/dts/riscv'
+     - 'C:/zephyr_dev/workspace/zephyr/dts/posix'
+     - 'C:/zephyr_dev/workspace/zephyr/dts/arm64'
+     - 'C:/zephyr_dev/workspace/zephyr/dts/arm'
+     - 'C:/zephyr_dev/workspace/zephyr/dts/arc'
+     - 'C:/zephyr_dev/workspace/zephyr/dts'
+  kconfig:
+    files:
+     - 'C:/zephyr_apps/boards/ammortal/ionode_a2/ionode_a2_mimxrt1176_cm7_defconfig'
+     - 'C:/zephyr_apps/ionode-test/prj.conf'
+    user-files:
+     - 'C:/zephyr_apps/ionode-test/prj.conf'
+  toolchain:
+    name: 'zephyr'
+    path: 'C:/Users/OMNITEK/zephyr-sdk-0.17.4'
+  zephyr:
+    version: '4.3.99'
+    zephyr-base: 'C:/zephyr_dev/workspace/zephyr'
+version: '0.1.0'
+west:
+  command: 'C:\zephyr_dev\workspace\.venv\Scripts\west build -p always -b ionode_a2/mimxrt1176/cm7 -- -DBOARD_ROOT=C:\zephyr_apps'
+  topdir: 'C:\zephyr_dev\workspace'
+  version: '1.5.0'

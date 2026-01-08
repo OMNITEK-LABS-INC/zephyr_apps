@@ -1,0 +1,5 @@
+west:
+  command: C:\zephyr_dev\workspace\.venv\Scripts\west build -p always -b ionode_a2/mimxrt1176/cm7
+    -- -DBOARD_ROOT=C:\zephyr_apps
+  topdir: C:\zephyr_dev\workspace
+  version: 1.5.0

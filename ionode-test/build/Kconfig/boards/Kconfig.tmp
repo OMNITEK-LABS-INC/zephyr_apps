@@ -1,0 +1,2 @@
+# Load Zephyr board Kconfig descriptions.
+osource "C:/zephyr_apps/boards/ammortal/ionode_a2/Kconfig"

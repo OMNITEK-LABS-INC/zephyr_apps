@@ -1,0 +1,56 @@
+* open terminal
+cd \zephyr_apps\motor_control_can
+C:\zephyr_dev\workspace\.venv\Scripts\Activate.ps1
+$Env:ZEPHYR_BASE = "C:\zephyr_dev\workspace\zephyr"
+
+...
+* for rollwinder (rt1024)
+west build -p always -b rollwinder_rt1024 -- -DBOARD_ROOT="$(pwd)" -DCONF_FILE="prj_no_storage.conf"
+
+...
+* for ionode-test (rt1176)
+west build -p always -b ionode_a2/mimxrt1176/cm7 --sysbuild -- -DBOARD_ROOT="$(pwd)"
+west build -p always -b ionode_a2/mimxrt1176/cm7 --sysbuild -- -DBOARD_ROOT="C:\Omnitek_Dev\zephyr_apps"
+
+...
+* to use debugger
+
+$Env:PATH += ";C:\Program Files\SEGGER\JLink_V878"
+west attach --runner jlink
+* load symbols for mcuboot
+(gdb) file build/mcuboot/zephyr/zephyr.elf
+(gdb) mon reset
+(gdb) c
+(gdb) bt
+(gdb) b main
+(gdb) n
+
+https://blog.golioth.io/zephyr-for-hardware-engineers-gdb-debugging/
+[b]reak sensor_read   # Function name to break on (ie. "sensor_read")
+[b]reak main.c:34     # Call out a line ("34") of a file ("main.c") to break on
+[c]ontinue            # Continue the program until next breakpoint 
+[n]ext                # step over
+[s]tep                # step into
+[f]inish              # run until current function returns
+[p]rint <var>         # display latest variable, but also can print out complex data structures
+[i]nfo [b]reakpoints  # list all breakpoints
+[d]elete 1            # delete breakpoint #1 (shown in command above)
+[b]ack[t]race         # see all calls that got you to where you currently are
+[i]nfo threads        # see all threads (useful since this is an RTOS)
+[w]atch <var>         # break when a variable's value changes
+x/32bx 0x20020000     # prints out 32 bytes in hex format from that address
+clear                 # remove the breakpoint you just stopped on
+
+info program	# list program details
+info stack
+info registers
+
+* to open file at current program counter location: ctrl+x then a
+* to move focus back to gdb: ctrl+x then o
+* to halt: ctrl+c
+* to exit: ctrl+d
+
+
+...
+west build -t menuconfig
+

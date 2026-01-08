@@ -1,0 +1,33 @@
+# Available runners configured by board.cmake.
+runners:
+- linkserver
+- jlink
+- pyocd
+
+# Default flash runner if --runner is not given.
+flash-runner: linkserver
+
+# Default debug runner if --runner is not given.
+debug-runner: linkserver
+
+# Common runner configuration values.
+config:
+  board_dir: C:/zephyr_apps/boards/ammortal/ionode_a2
+  # Build outputs:
+  elf_file: zephyr.elf
+  bin_file: zephyr.bin
+  # Host tools:
+  gdb: C:/Users/OMNITEK/zephyr-sdk-0.17.4/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb.exe
+
+# Runner specific arguments
+args:
+  linkserver:
+    - --dt-flash=y
+    - --no-reset
+  jlink:
+    - --dt-flash=y
+    - --device=MIMXRT1176xxxA_M7
+    - --no-reset
+  pyocd:
+    - --dt-flash=y
+    - --target=mimxrt1170_cm7
