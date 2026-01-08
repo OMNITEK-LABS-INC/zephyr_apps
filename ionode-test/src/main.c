@@ -30,7 +30,7 @@ int main(void)
 	int ret;
 	bool led_state = true;
 
-	printk("Hello Bradley from %s on %s!\n\r", MCUBOOT_HELLO_WORLD_FROM, CONFIG_BOARD);
+	printk("Hello World from %s on %s!\n\r", MCUBOOT_HELLO_WORLD_FROM, CONFIG_BOARD);
     printk("build info: %s %s\n\r", __DATE__, __TIME__);
 
 	if (!gpio_is_ready_dt(&led)) {
